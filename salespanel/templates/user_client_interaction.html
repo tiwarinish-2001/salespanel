@@ -1,0 +1,205 @@
+{% extends 'base2.html' %}
+{% block title %}User Client Interaction{% endblock %}
+{% load static %}
+{% block content %}
+<head>
+    {% comment %} <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"> {% endcomment %}
+    <style>
+        .dataTables_wrapper .dataTables_sort_icon {
+            display: none; 
+            .dataTables_sort_icon:none;
+        }
+        /* General styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.4;
+    color: #333;
+    {% comment %} background-color: #f4f4f4; {% endcomment %}
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+}
+
+th, td {
+    padding: 6px 4px;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+}
+
+th {
+    background-color: #008B8B;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+/* Column widths */
+.col-done { width: 3%; }
+.col-name { width: 10%; }
+.col-email { width: 8%; }
+.col-phone { width: 10%; }
+.col-company { width: 12%; }
+.col-location { width: 10%; }
+.col-investigate-date { width: 8%; }
+.col-schedule-date { width: 8%; }
+.col-lead { width: 6%; }
+.col-response { width: 8%; }
+.col-description { width: 17%; }
+
+/* Form element styles */
+input[type="text"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 2px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    box-sizing: border-box;
+    font-size: 11px;
+}
+
+input[type="checkbox"] {
+    margin: 0;
+    vertical-align: middle;
+}
+
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 1200px) {
+    table { font-size: 11px; }
+    th, td { padding: 4px 2px; }
+    input[type="text"], input[type="date"], select { font-size: 10px; }
+}
+
+@media screen and (max-width: 992px) {
+    table { font-size: 10px; }
+    th, td { padding: 3px 2px; }
+    input[type="text"], input[type="date"], select { padding: 1px; }
+    .col-description { display: none; }
+}
+   
+    </style>
+</head>
+    <h1 style="text-align: center;">User Client Interaction</h1>    
+    <table id="interactionTable" class="display">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Company Name</th> <!-- New Company Name column -->
+                <th>Location</th> <!-- New Location column -->
+                <th>Investigate Date</th>
+                <th>Schedule Date</th>
+                <th>Lead</th>
+                <th>Response</th>
+                <th>Description</th> <!-- Description column -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for interaction in interactions %}
+            <tr>
+                <td>{{ interaction.name }}</td>
+                <td>{{ interaction.email }}</td>
+                <td>{{ interaction.phonenumber }}</td>
+                <td>{{ interaction.company_name }}</td> <!-- Display company name here -->
+                <td>{{ interaction.location }}</td> <!-- Display location here -->
+                <td>{{ interaction.investigate_date }}</td>
+                <td>{{ interaction.schedule_date }}</td>
+                <td>{{ interaction.lead }}</td>
+                <td>{{ interaction.response }}</td>
+                <td>{{ interaction.description }}</td> <!-- Display description here -->
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10">No Interactions found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% comment %} <table id="interactionTable" class="display">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Investigate Date</th>
+                <th>Schedule Date</th>
+                <th>Lead</th>
+                <th>Response</th>
+                <th>Description</th> <!-- New Description column -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for interaction in interactions %}
+            <tr>
+                <td>{{ interaction.name }}</td>
+                <td>{{ interaction.email }}</td>
+                <td>{{ interaction.phonenumber }}</td>
+                <td>{{ interaction.investigate_date }}</td>
+                <td>{{ interaction.schedule_date }}</td>
+                <td>{{ interaction.lead }}</td>
+                <td>{{ interaction.response }}</td>
+                <td>{{ interaction.description }}</td> <!-- Display description here -->
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No Interactions found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table> {% endcomment %}
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script> 
+    <script>
+        $(document).ready(function() {
+            $('#interactionTable').DataTable({
+                "paging": true,          
+                "searching": true,     
+                "ordering": true,        
+                "info": true,           
+                "lengthChange": true     
+            });
+        });
+    </script> 
+{% endblock %}

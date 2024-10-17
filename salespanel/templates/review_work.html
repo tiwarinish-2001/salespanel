@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% block title %}Admin{% endblock %}
+{% comment %} {% load static %} {% endcomment %}
+{% block content %}
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" rel="stylesheet">
+    <style>
+        
+    
+    
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 0px;
+            margin: 0;
+            line-height: 1.4;
+            color: #333;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size:24px;
+        }
+        label {
+            display: block;
+            margin-left:10px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        #workHistoryTable {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+        }
+        
+        #workHistoryTable thead {
+            background-color: blue; /* Header background */
+            color: #fff; /* Header text color */
+        }
+        
+        #workHistoryTable th,
+        #workHistoryTable td {
+            padding: 6px 4px;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+        
+        #workHistoryTable thead th {
+            background-color: #7EACB5;
+            color: black;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+        
+        /* Column widths */
+        #workHistoryTable th:nth-child(1) { width: 3%; } /* Done */
+        #workHistoryTable th:nth-child(2) { width: 10%; } /* Name */
+        #workHistoryTable th:nth-child(3) { width: 8%; } /* Email */
+        #workHistoryTable th:nth-child(4) { width: 10%; } /* Phone Number */
+        #workHistoryTable th:nth-child(5) { width: 12%; } /* Company Name */
+        #workHistoryTable th:nth-child(6) { width: 10%; } /* Location */
+        #workHistoryTable th:nth-child(7) { width: 8%; } /* Investigate Date */
+        #workHistoryTable th:nth-child(8) { width: 8%; } /* Schedule Date */
+        #workHistoryTable th:nth-child(9) { width: 6%; } /* Lead */
+        #workHistoryTable th:nth-child(10) { width: 8%; } /* Response */
+        #workHistoryTable th:nth-child(11) { width: 8%; } /* Employee */
+        #workHistoryTable th:nth-child(12) { width: 17%; } /* Description */
+        
+        #workHistoryTable tbody td {
+            border-bottom: 1px solid #ddd;
+            color: #333;
+        }
+        
+        #workHistoryTable tbody tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+        
+        /* Hover effect for table rows */
+        #workHistoryTable tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* Pagination and search input */
+        .dataTables_wrapper .dataTables_filter input {
+            margin-left: 10px;
+            margin-right: 11px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+        }
+        
+        .dataTables_wrapper .dataTables_length select {
+            margin-left: 12px;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        
+        /* DataTable buttons for pagination */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 8px 12px;
+            margin: 0 2px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            background-color: #3a7bd5;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background-color: #ff6600;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background-color: #ff6600;
+            border-color: #ff6600;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #workHistoryTable {
+                display: block;
+                overflow-x: auto;
+            }
+        
+            #workHistoryTable th,
+            #workHistoryTable td {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+        
+        .delete-btn {
+            background-color: #9d4edd;
+            color: black;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius:0.2rem;
+        }
+        
+        .delete-btn:hover {
+            background-color: black;
+            color:#9d4edd;
+        }
+        
+        .btn{
+            display: inline-block;
+            padding: 0.5rem 2.5rem;
+            margin: 0.5em;
+            background: #9d4edd;
+            color: black;
+            border: none;
+            font-size: 20px;
+            border-radius: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .btn:hover{
+            color: #9d4edd;
+            border: 1px solid #9d4edd;
+            box-shadow: 0 0 15px #9d4edd;
+        }
+        .btn::after{
+            content: '';
+            background: black;
+            position: absolute;
+            z-index: -1;
+            left: -20%;
+            right: -20%;
+            top: 0;
+            bottom: 0;
+            transform: skew(-45deg) scale(0,1);
+            transition: all 0.5s;
+        }
+        .btn:hover::after{
+            transform: skew(-45deg) scale(1,1);
+            -webkit-transition: all 0.5s;
+            transition: all 0.5s;
+        }
+        
+    </style>
+    <h1>Review Work</h1>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table id="workHistoryTable" class="display">
+            <thead>
+                <tr>
+                    <th>Done</th>
+                    <th >Name</th>
+                    <th >Email</th>
+                    <th >Phone Number</th>
+                    <th >Company Name</th>
+                    <th>Location</th>
+                    <th>Investigate Date</th>
+                    <th>Schedule Date</th>
+                    <th>Lead</th>
+                    <th>Response</th>
+                    <th>Employee</th>
+                    <th>Description</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <!-- Separate form for each row to handle independent actions -->
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <td><input type="checkbox" name="done_{{ forloop.counter }}"></td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.phonenumber }}</td>
+                        <td>{{ item.company_name }}</td>
+                        <td>{{ item.location }}</td>
+                        <td>
+                            <input type="date" name="investigate_date_{{ forloop.counter }}" value="{{ item.investigate_date|date:'Y-m-d' }}">
+                        </td>
+                        <td>
+                            <input type="date" name="schedule_date_{{ forloop.counter }}" value="{{ item.schedule_date|date:'Y-m-d' }}">
+                        </td>
+                        <td>
+                            <select name="lead_{{ forloop.counter }}">
+                                <option value="High" {% if item.lead == "High" %}selected{% endif %}>High</option>
+                                <option value="Medium" {% if item.lead == "Medium" %}selected{% endif %}>Medium</option>
+                                <option value="Low" {% if item.lead == "Low" %}selected{% endif %}>Low</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="response_{{ forloop.counter }}">
+                                <option value="Interested" {% if item.response == "Interested" %}selected{% endif %}>Interested</option>
+                                <option value="Good" {% if item.response == "Good" %}selected{% endif %}>Good</option>
+                                <option value="Bad" {% if item.response == "Bad" %}selected{% endif %}>Bad</option>
+                                <option value="Not Interested" {% if item.response == "Not Interested" %}selected{% endif %}>Not Interested</option>
+                            </select>
+                        </td>
+                        <td>{{ item.assigned_user }}</td>
+                        <td><textarea name="description_{{ forloop.counter }}" cols="30" rows="2">{{ item.description }}</textarea></td>
+                        <td>
+                            <button type="submit" name="delete_{{ item.id }}" class="delete-btn" onclick="return confirmDelete()">Delete</button>
+                        </td>
+    
+                        <!-- Hidden fields to include necessary data for updates -->
+                        <input type="hidden" name="name_{{ forloop.counter }}" value="{{ item.name }}">
+                        <input type="hidden" name="email_{{ forloop.counter }}" value="{{ item.email }}">
+                        <input type="hidden" name="phonenumber_{{ forloop.counter }}" value="{{ item.phonenumber }}">
+                        <input type="hidden" name="company_name_{{ forloop.counter }}" value="{{ item.company_name }}">
+                        <input type="hidden" name="location_{{ forloop.counter }}" value="{{ item.location }}">
+                        <input type="hidden" name="assigned_user_{{ forloop.counter }}" value="{{ item.assigned_user }}">
+                    </form>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <center><button type="submit" class="btn btn-bg-success" formaction="{% url 'review_work' %}" formmethod="POST">Submit</button></center>
+    </form>
+    
+    <script>
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this record?");
+    }
+    </script>
+    
+    
+    
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script> 
+    
+        
+    
+        
+        <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+        <script>
+            function confirmDelete() {
+                return confirm("Are you sure you want to delete this row?");
+            }
+            $(".datepicker").datepicker({
+                dateFormat: "yy-mm-dd"
+            });
+            $(document).ready(function() {
+                $('#workHistoryTable').DataTable({
+                    "paging": true,    // Enable pagination
+                    "searching": true, // Enable searching
+                    "info": true,      // Display info about table state
+                    "ordering": true   // Enable column sorting
+                });
+            });
+           
+        </script>
+        {% endblock %}

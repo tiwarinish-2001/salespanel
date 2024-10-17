@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+    {% load static %}
+    {% block title %}Work History{% endblock %}
+    
+    {% block content %}
+    
+        
+        <!-- DataTables CSS -->
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+        <h1>Work History</h1>
+        <style> 
+            
+    
+    
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f6f9;
+                padding: 0px;
+                margin: 0;
+                line-height: 1.4;
+                color: #333;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            
+            h1 {
+                text-align: center;
+                color: #333;
+                margin-bottom: 15px;
+                font-size: 24px;
+            }
+            label {
+                display: block;
+                margin-left:10px;
+                margin-bottom: 8px;
+                font-weight: bold;
+                color: #333;
+            }
+            /* Table styling */
+            #workHistoryTable {
+                width: 100%;
+                border-collapse: collapse;
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                font-size: 12px;
+            }
+            
+            #workHistoryTable thead {
+                background-color:Blue; /* Header background */
+                color: #fff; /* Header text color */
+            }
+            #workHistoryTable th,td{
+                padding: 6px 4px;
+                text-align: left;
+                border: 1px solid #e0e0e0;
+            }
+            #workHistoryTable thead th {
+                background-color: #FADFA1;
+                color: black;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 0.02em;
+            }
+            
+            #workHistoryTable tbody td {
+                border-bottom: 1px solid #ddd;
+                color: #333;
+            }
+            #workHistoryTable tbody tr:nth-child(even) {
+                background-color: #f8f8f8;
+            }
+            /* Hover effect for table rows */
+            #workHistoryTable tbody tr:hover {
+                background-color: #f5f5f5;
+            }
+            
+            /* Pagination and search input */
+            .dataTables_wrapper .dataTables_filter input {
+                margin-left: 10px;
+                margin-right: 11px;
+                padding: 6px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                width: 200px;
+            }
+            
+            .dataTables_wrapper .dataTables_length select {
+                margin-left: 12px;
+                padding: 6px;
+                border-radius: 4px;
+                border: 1px solid #ccc;
+            }
+            
+            /* DataTable buttons for pagination */
+            .dataTables_wrapper .dataTables_paginate .paginate_button {
+                padding: 8px 12px;
+                margin: 0 2px;
+                border-radius: 4px;
+                border: 1px solid transparent;
+                background-color: #3a7bd5;
+                color: #fff;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            
+            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+                background-color: #ff6600;
+            }
+            
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+                background-color: #ff6600;
+                border-color: #ff6600;
+            }
+            
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                #workHistoryTable {
+                    display: block;
+                    overflow-x: auto;
+                }
+            
+                #workHistoryTable thead th,
+                #workHistoryTable tbody td {
+                    font-size: 14px;
+                    padding: 10px;
+                }
+            }
+             </style>
+             <table id="workHistoryTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Company Name</th> <!-- New Company Name column -->
+                        <th>Location</th> <!-- New Location column -->
+                        <th>Investigate Date</th>
+                        <th>Schedule Date</th>
+                        <th>Lead</th>
+                        <th>Response</th>
+                        <th>Description</th>
+                        <th>Reviewed work</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in data %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.phonenumber }}</td>
+                        <td>{{ item.company_name }}</td> <!-- Display company name here -->
+                        <td>{{ item.location }}</td> <!-- Display location here -->
+                        <td>
+                            <input type="date" name="investigate_date_{{ forloop.counter }}" value="{{ item.investigate_date|date:'Y-m-d' }}">
+                        </td>
+                        <td>
+                            <input type="date" name="schedule_date_{{ forloop.counter }}" value="{{ item.schedule_date|date:'Y-m-d' }}">
+                        </td>
+                        <td>{{ item.lead }}</td>
+                        <td>{{ item.response }}</td>
+                        <td><textarea name="description_{{ forloop.counter }}"  col="30" rows="2">{{ item.description }}</textarea></td> <!-- Display description here -->
+                        <td>{{ item.assigned_user }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+    
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+        <!-- DataTables JS -->
+        <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    
+        <script>
+            $(document).ready(function() {
+                $('#workHistoryTable').DataTable();
+            });
+        </script>
+        {% endblock %}
+    

@@ -1,0 +1,505 @@
+class ClientData(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phonenumber = models.CharField(max_length=15)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    investigate_date = models.DateField(null=True, blank=True)
+    schedule_date = models.DateField(null=True, blank=True)
+    lead = models.CharField(max_length=100)
+    response = models.TextField()
+    assigned_user = models.CharField(max_length=15)
+    description = models.TextField(null=True, blank=True)  # Added description field
+
+    def __str__(self):
+        return self.name
+
+
+
+class UserSubmits(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phonenumber = models.CharField(max_length=15)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    investigate_date = models.DateField(null=True, blank=True)
+    schedule_date = models.DateField(null=True, blank=True)
+    lead = models.CharField(max_length=100)
+    response = models.TextField()
+    assigned_user = models.CharField(max_length=15)
+    reviewed = models.IntegerField(default=0)
+    description = models.TextField(null=True, blank=True)  # Added description field
+
+    def __str__(self):
+        return self.name
+
+
+
+class UserClientInteraction(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phonenumber = models.CharField(max_length=15)
+    investigate_date = models.DateField(null=True, blank=True)
+    schedule_date = models.DateField(null=True, blank=True)
+    lead = models.CharField(max_length=255, null=True, blank=True)
+    response = models.TextField(null=True, blank=True)
+    assigned_user = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)  # Added description field
+
+    def __str__(self):
+        return f"{self.name} - {self.phonenumber}"
+
+
+
+
+@user_passes_test(lambda user: user.is_superuser)
+def upload_file(request):
+    if request.method == 'POST' and 'csv_file' in request.FILES:
+        csv_file = request.FILES['csv_file']
+        selected_users = request.POST.getlist('selected_users')
+
+        # Read the CSV file into a pandas DataFrame
+        df = pd.read_csv(csv_file)
+
+        # Convert 'Investigate_Date' and 'Schedule_Date' to the correct format
+        df['Investigate_Date'] = pd.to_datetime(df['Investigate_Date'], format='%d-%m-%Y', errors='coerce')
+        df['Schedule_Date'] = pd.to_datetime(df['Schedule_Date'], format='%d-%m-%Y', errors='coerce')
+
+        # First, drop duplicates based on 'Name', 'Email', and 'Lead' where all other fields are the same
+        df_unique = df.drop_duplicates(subset=['Name', 'Email', 'Lead', 'Investigate_Date', 'phonenumber', 'Description'], keep='first')
+
+        # Next, identify groups where 'Name', 'Email', and 'Lead' are the same but other fields differ
+        df_diff = df.groupby(['Name', 'Email', 'Lead']).filter(
+            lambda x: len(x) > 1 and (
+                x['Investigate_Date'].nunique() > 1 or
+                x['phonenumber'].nunique() > 1 or
+                x['Description'].nunique() > 1
+            )
+        )
+
+        # Combine the unique and different groups
+        df_final = pd.concat([df_unique, df_diff]).drop_duplicates()
+
+        # Add Timestamp column
+        df_final['Timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # Remove existing data from the database based on the 'Name', 'Email', and 'Lead'
+        for _, row in df_final.iterrows():
+            ClientData.objects.filter(
+                name=row['Name'],
+                email=row['Email'],
+                lead=row['Lead']
+            ).delete()  # Delete the previous entries matching 'Name', 'Email', and 'Lead'
+
+        # Split the data based on the number of records specified for each user
+        start_idx = 0
+        for user in selected_users:
+            num_records = int(request.POST.get(f'split_number_{user}', 0))
+            
+            if num_records > 0:
+                # Get chunk of data for this user
+                end_idx = start_idx + num_records if start_idx + num_records < len(df_final) else len(df_final)
+                user_data = df_final.iloc[start_idx:end_idx]
+
+                # Assign the user to each row in the chunk
+                assigned_user = User.objects.get(username=user)
+                for _, row in user_data.iterrows():
+                    ClientData.objects.create(
+                        name=row['Name'],
+                        email=row['Email'],
+                        phonenumber=row['phonenumber'],
+                        investigate_date=row['Investigate_Date'].date() if pd.notnull(row['Investigate_Date']) else None,
+                        schedule_date=row['Schedule_Date'].date() if pd.notnull(row['Schedule_Date']) else None,
+                        lead=row['Lead'],
+                        response=row['Response'],
+                        assigned_user=assigned_user,
+                        description=row.get('Description', ''),  # Add the description column
+                    )
+                start_idx = end_idx
+
+        # Add a success message for each user
+        messages.success(request, "Data has been successfully allocated to the users.")
+        return redirect('upload_file')
+
+    users = User.objects.all()
+    return render(request, 'upload_file.html', {'users': users})
+
+
+
+
+
+@user_passes_test(lambda user: user.is_staff)
+def review_work(request):
+    # Fetch only the records that are not reviewed
+    data = UserSubmits.objects.filter(reviewed=0)
+    
+    if request.method == "POST":
+        for key, value in request.POST.items():
+            if key.startswith("delete_"):  # Identify the delete button
+                index = key.split('_')[1]
+                # Delete the corresponding row from the database
+                try:
+                    UserSubmits.objects.filter(id=index).delete()
+                    print(f"Deleted UserSubmits with id={index}")
+                except UserSubmits.DoesNotExist:
+                    print(f"UserSubmits with id={index} does not exist")
+
+            elif key.startswith("name_"):  # This identifies each row of data for updates
+                index = key.split('_')[1]
+                done = request.POST.get(f'done_{index}')
+
+                # Only process the rows that are marked as done (checked)
+                if done:
+                    # Fetch values from the form
+                    name = request.POST.get(f'name_{index}')
+                    email = request.POST.get(f'email_{index}')
+                    phonenumber = request.POST.get(f'phonenumber_{index}')
+                    investigate_date = request.POST.get(f'investigate_date_{index}')
+                    schedule_date = request.POST.get(f'schedule_date_{index}')
+                    lead = request.POST.get(f'lead_{index}')
+                    response = request.POST.get(f'response_{index}')
+                    description = request.POST.get(f'description_{index}')  # Get the description field
+
+                    # Delete all previous records with the same phonenumber
+                    UserSubmits.objects.filter(phonenumber=phonenumber).delete()
+
+                    # Create a new record with the updated data
+                    new_submission = UserSubmits(
+                        name=name,
+                        email=email,
+                        phonenumber=phonenumber,
+                        investigate_date=investigate_date,
+                        schedule_date=schedule_date,
+                        lead=lead,
+                        response=response,
+                        description=description,
+                        assigned_user=request.user.username,
+                        reviewed=1  # Mark the data as reviewed
+                    )
+                    new_submission.save()  # Save the new entry
+
+                    print(f"Replaced old records and saved new UserSubmits for phonenumber={phonenumber}")
+
+        # Redirect after processing to refresh the page with updated data
+        return redirect('review_work')
+    
+    return render(request, 'review_work.html', {"data": data})
+
+
+
+
+
+@login_required
+def assigned_data(request):
+    user = request.user.username
+    submitted_phone_numbers = UserSubmits.objects.filter(assigned_user=user).values_list('phonenumber', flat=True)
+    data = ClientData.objects.filter(assigned_user=user).exclude(phonenumber__in=submitted_phone_numbers)
+    
+    if request.method == "POST":
+        # Get data from the form and save it to UserSubmits and UserClientInteraction tables
+        for key, value in request.POST.items():
+            if key.startswith("name_"):  # this identifies each row of data
+                index = key.split('_')[1]
+                done = request.POST.get(f'done_{index}')
+
+                # Only process the rows that are marked as done (checked)
+                if done:
+                    name = request.POST.get(f'name_{index}')
+                    email = request.POST.get(f'email_{index}')
+                    phonenumber = request.POST.get(f'phonenumber_{index}')
+                    investigate_date = request.POST.get(f'investigate_date_{index}')
+                    schedule_date = request.POST.get(f'schedule_date_{index}')
+                    lead = request.POST.get(f'lead_{index}')
+                    response = request.POST.get(f'response_{index}')
+                    description = request.POST.get(f'description_{index}')  # Get the description field
+
+                    # Save to UserSubmits model
+                    UserSubmits.objects.create(
+                        name=name,
+                        email=email,
+                        phonenumber=phonenumber,
+                        investigate_date=investigate_date,
+                        schedule_date=schedule_date,
+                        lead=lead,
+                        response=response,
+                        description=description,
+                        assigned_user=request.user.username
+                    )
+
+                    # Save to UserClientInteraction model
+                    UserClientInteraction.objects.create(
+                        name=name,
+                        email=email,
+                        phonenumber=phonenumber,
+                        investigate_date=investigate_date,
+                        schedule_date=schedule_date,
+                        lead=lead,
+                        response=response,
+                        description=description,  # Save the description field
+                        assigned_user=request.user.username
+                    )
+
+        return redirect('assigned_data')
+
+    return render(request, 'assigned_data.html', {"data": data})
+
+
+
+
+
+
+
+<form method="POST">
+        {% csrf_token %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Done</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Investigate Date</th>
+                    <th>Schedule Date</th>
+                    <th>Lead</th>
+                    <th>Response</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="done_{{ forloop.counter }}">
+                    </td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>{{ item.phonenumber }}</td>
+                    <td>
+                        <input type="date" name="investigate_date_{{ forloop.counter }}" value="{{ item.investigate_date|date:'Y-m-d' }}">
+                    </td>
+                    <td>
+                        <input type="date" name="schedule_date_{{ forloop.counter }}" value="{{ item.schedule_date|date:'Y-m-d' }}">
+                    </td>
+                    
+                    <td>
+                        <select name="lead_{{ forloop.counter }}">
+                            <option value="High" {% if item.lead == "High" %}selected{% endif %}>High</option>
+                            <option value="Medium" {% if item.lead == "Medium" %}selected{% endif %}>Medium</option>
+                            <option value="Low" {% if item.lead == "Low" %}selected{% endif %}>Low</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="response_{{ forloop.counter }}">
+                            <option value="Interested" {% if item.response == "Interested" %}selected{% endif %}>Interested</option>
+                            <option value="Good" {% if item.response == "Good" %}selected{% endif %}>Good</option>
+                            <option value="Bad" {% if item.response == "Bad" %}selected{% endif %}>Bad</option>
+                            <option value="Not Interested" {% if item.response == "Not Interested" %}selected{% endif %}>Not Interested</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" name="description_{{ forloop.counter }}" value="{{ item.description }}">
+                    </td>
+                </tr>
+                <input type="hidden" name="name_{{ forloop.counter }}" value="{{ item.name }}">
+                <input type="hidden" name="email_{{ forloop.counter }}" value="{{ item.email }}">
+                <input type="hidden" name="phonenumber_{{ forloop.counter }}" value="{{ item.phonenumber }}">
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <input type="submit" value="Submit">
+    </form>
+
+
+
+
+<form method="POST"enctype="multipart/form-data">
+            {% csrf_token %}
+            <table id="workHistoryTable" class="display">
+                <thead>
+                    <tr>
+                        <th style="background-color: rgb(250,250,210);">Done</th>
+                        <th style="background-color: rgb(250,250,210);">Name</th>
+                        <th style="background-color: rgb(250,250,210);">Email</th>
+                        <th style="background-color: rgb(250,250,210);">Phone Number</th>
+                        <th style="background-color: rgb(250,250,210);">Investigate Date</th>
+                        <th style="background-color: rgb(250,250,210);">Schedule Date</th>
+                        <th style="background-color: rgb(250,250,210);">Lead</th>
+                        <th style="background-color: rgb(250,250,210);">Response</th>
+                        <th style="background-color: rgb(250,250,210);">Employee</th>
+                        <th style="background-color: rgb(250,250,210);">Description</th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in data %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="done_{{ forloop.counter }}">
+                        </td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.phonenumber }}</td>
+                        <td>
+                            <input type="date" name="investigate_date_{{ forloop.counter }}" value="{{ item.investigate_date|date:'Y-m-d' }}">
+                        </td>
+                        <td>
+                            <input type="date" name="schedule_date_{{ forloop.counter }}" value="{{ item.schedule_date|date:'Y-m-d' }}">
+                        </td>
+                                          
+                        <td>
+                            <select name="lead_{{ forloop.counter }}">
+                                <option value="High" {% if item.lead == "High" %}selected{% endif %}>High</option>
+                                <option value="Medium" {% if item.lead == "Medium" %}selected{% endif %}>Medium</option>
+                                <option value="Low" {% if item.lead == "Low" %}selected{% endif %}>Low</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="response_{{ forloop.counter }}">
+                                <option value="Interested" {% if item.response == "Interested" %}selected{% endif %}>Interested</option>
+                                <option value="Good" {% if item.response == "Good" %}selected{% endif %}>Good</option>
+                                <option value="Bad" {% if item.response == "Bad" %}selected{% endif %}>Bad</option>
+                                <option value="Not Interested" {% if item.response == "Not Interested" %}selected{% endif %}>Not Interested</option>
+                            </select>
+                        </td>
+                        <td>
+                            {{ item.assigned_user }}
+                        </td>
+                        <td>
+                            <input type="text" name="description_{{ forloop.counter }}" value="{{ item.description }}">
+                        </td>
+                        <td>
+                            <button type="submit" name="delete_{{ item.id }}" class="delete-btn" onclick="return confirmDelete()">Delete</button>
+                        </td>
+                        
+    
+                    </tr>
+                    <input type="hidden" name="name_{{ forloop.counter }}" value="{{ item.name }}">
+                    <input type="hidden" name="email_{{ forloop.counter }}" value="{{ item.email }}">
+                    <input type="hidden" name="phonenumber_{{ forloop.counter }}" value="{{ item.phonenumber }}">
+                    {% endfor %}
+                </tbody>
+            </table>
+    
+            <input type="submit" value="Submit">
+        </form>
+
+
+
+
+
+<table id="scheduledCallsTable" class="display">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Investigate Date</th>
+                <th>Schedule Date</th>
+                <th>Lead</th>
+                <th>Response</th>
+                <th>Description</th> <!-- New Description column -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.phonenumber }}</td>
+                <td>
+                    <input type="date" name="investigate_date_{{ forloop.counter }}" value="{{ item.investigate_date|date:'Y-m-d' }}">
+                </td>
+                <td>
+                    <input type="date" name="schedule_date_{{ forloop.counter }}" value="{{ item.schedule_date|date:'Y-m-d' }}">
+                </td>
+                
+                <td>{{ item.lead }}</td>
+                <td>{{ item.response }}</td>
+
+                <td>{{ item.description }}</td> <!-- Display description here -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+
+
+<table id="interactionTable" class="display">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Investigate Date</th>
+                <th>Schedule Date</th>
+                <th>Lead</th>
+                <th>Response</th>
+                <th>Description</th> <!-- New Description column -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for interaction in interactions %}
+            <tr>
+                <td>{{ interaction.name }}</td>
+                <td>{{ interaction.email }}</td>
+                <td>{{ interaction.phonenumber }}</td>
+                <td>{{ interaction.investigate_date }}</td>
+                <td>{{ interaction.schedule_date }}</td>
+                <td>{{ interaction.lead }}</td>
+                <td>{{ interaction.response }}</td>
+                <td>{{ interaction.description }}</td> <!-- Display description here -->
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No Interactions found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+
+<table id="workHistoryTable" class="display">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Investigate Date</th>
+                    <th>Schedule Date</th>
+                    <th>Lead</th>
+                    <th>Response</th>
+                    <th>Description</th>
+                    <th>Reviewed work</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>{{ item.phonenumber }}</td>
+                    {% comment %} <td>{{ item.investigate_date }}</td>
+                    <td>{{ item.schedule_date }}</td> {% endcomment %}
+                    <td>
+                        <input type="date" name="investigate_date_{{ forloop.counter }}" value="{{ item.investigate_date|date:'Y-m-d' }}">
+                    </td>
+                    <td>
+                        <input type="date" name="schedule_date_{{ forloop.counter }}" value="{{ item.schedule_date|date:'Y-m-d' }}">
+                    </td>
+                    
+                    <td>{{ item.lead }}</td>
+                    <td>{{ item.response }}</td>
+                    <td>{{ item.description }}</td> <!-- Display description here -->
+                    <td>{{ item.assigned_user }}</td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+
+
+

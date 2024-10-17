@@ -1,0 +1,276 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Django App{% endblock %}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}"> {% endcomment %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <style>
+        /* General styling for body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+/* Styling for the main heading */
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    padding:10px;
+}
+
+        main{
+            display: block;
+            width: 100%;
+            overflow: scroll;
+            scrollbar-width: none !important;
+            {% comment %} padding: 40px; {% endcomment %}
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+        }
+        
+        /* Styling for labels */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* Styling for input fields */
+        input[type="file"],
+        input[type="number"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        /* Styling for the checkbox section */
+        #user_selection {
+            margin-bottom: 20px;
+        }
+        
+        /* Styling each user row */
+        #user_selection div {
+            margin-bottom: 10px;
+        }
+        
+        /* Styling for checkboxes and associated labels */
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        
+        label[for^="user_"] {
+            font-weight: normal;
+            margin-right: 10px;
+        }
+        
+        /* Submit button styling */
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        
+
+        /* Card hover effect */
+        .card:hover {
+            transform: translateY(-10px);
+            background-color: #001F3F; /* Dark grey-blue */
+            border: 1px solid #001F3F;
+            box-shadow: 0 0 15px #001F3F;
+            color: #36454F; /* Change text color to white for better contrast */
+        }
+        
+        /* Card title styling */
+        .card h2 {
+            font-size: 24px;
+            color: black;
+            margin-bottom: 15px;
+        }
+        
+        /* Card paragraph styling */
+        .card p {
+            font-size: 16px;
+            color: black;
+            margin-top: 20px;
+        }
+
+        /* Assign unique light background colors to each card */
+.card:nth-child(1) {
+    background-color: #C96868; /* Light Blue */
+}
+
+.card:nth-child(2) {
+    background-color: #FADFA1; /* Light Purple */
+}
+
+.card:nth-child(3) {
+    background-color: #FFF4EA; /* Light Green */
+}
+
+.card:nth-child(4) {
+    background-color: #7EACB5; /* Light Orange */
+}
+    
+.card:nth-child(1) {
+    animation: slideInLeft 1.5s ease-out;
+    animation-delay: 0.2s;
+}
+
+.card:nth-child(2) {
+    animation: slideInRight 1s ease-out;
+    animation-delay: 0.2s;
+}
+
+.card:nth-child(3) {
+    animation: slideInBottom 1.5s ease-out;
+    animation-delay: 0.2s;
+}
+
+.card:nth-child(4) {
+    animation: slideInTop 1.8s ease-out;
+    animation-delay: 0.3s;
+}
+
+
+/* Slide from left */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Slide from right */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Slide from bottom */
+@keyframes slideInBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Slide from top */
+@keyframes slideInTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border: 1px solid #ddd; /* Add a border around the entire table */
+            border-spacing: 0; /* Remove any spacing between table cells */
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px; /* Reduced padding */
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold; /* Make header text bold */
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 5px;
+            border: none; /* Remove input borders to match table style */
+            background-color: #f9f9f9; /* Light gray background for inputs */
+        }
+        
+        /* Optional: Add hover effect to table rows */
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <!-- Brand/logo -->
+            <a class="navbar-brand" href="#">IT Solution4India</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_dashboard'%}">Admin Dashboard</a>
+                    </li>
+                    <!-- Add more nav links as needed -->
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link login-btn" href="{% url 'logout' %}">Log out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script>
+        document.querySelector('.navbar-toggler').addEventListener('click', function () {
+            document.querySelector('.navbar-nav').classList.toggle('show');
+        });
+    </script>
+    
+    <main>
+        {% block content %}
+        <!-- Default content can go here -->
+        {% endblock %}
+    </main>
+</body>
+</html>

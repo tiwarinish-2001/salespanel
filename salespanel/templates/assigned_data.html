@@ -1,0 +1,209 @@
+{% extends 'base2.html' %}
+{% block title %}Employee Dashboard{% endblock %}
+{% load static %}
+{% block content %}
+
+<style>
+    th {
+        background-color: #A9BA9D;
+        color: black;
+    }
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.4;
+    color: #333;
+    {% comment %} background-color: #f4f4f4; {% endcomment %}
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+}
+
+th, td {
+    padding: 6px 4px;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+}
+
+th {
+    background-color: #A9BA9D;
+    color: black;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+/* Column widths */
+.col-done { width: 3%; }
+.col-name { width: 10%; }
+.col-email { width: 8%; }
+.col-phone { width: 10%; }
+.col-company { width: 12%; }
+.col-location { width: 10%; }
+.col-investigate-date { width: 8%; }
+.col-schedule-date { width: 8%; }
+.col-lead { width: 6%; }
+.col-response { width: 8%; }
+.col-description { width: 17%; }
+
+/* Form element styles */
+input[type="text"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 2px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    box-sizing: border-box;
+    font-size: 11px;
+}
+
+input[type="checkbox"] {
+    margin: 0;
+    vertical-align: middle;
+}
+
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 1200px) {
+    table { font-size: 11px; }
+    th, td { padding: 4px 2px; }
+    input[type="text"], input[type="date"], select { font-size: 10px; }
+}
+
+@media screen and (max-width: 992px) {
+    table { font-size: 10px; }
+    th, td { padding: 3px 2px; }
+    input[type="text"], input[type="date"], select { padding: 1px; }
+    .col-description { display: none; }
+}
+</style>
+
+
+    <h1>Assigned Data</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Done</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Company Name</th> <!-- New column for company name -->
+                    <th>Location</th> <!-- New column for location -->
+                    <th>Investigate Date</th>
+                    <th>Schedule Date</th>
+                    <th>Lead</th>
+                    <th>Response</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="done_{{ forloop.counter }}">
+                    </td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>
+                        <a href="tel:{{ item.phonenumber }}">{{ item.phonenumber }}</a> <!-- Clickable phone number -->
+                    </td>
+                    
+                    <td>
+                        <input type="text" name="company_name_{{ forloop.counter }}" value="{{ item.company_name }}"> <!-- New input for company name -->
+                    </td>
+                    <td>
+                        <input type="text" name="location_{{ forloop.counter }}" value="{{ item.location }}"> <!-- New input for location -->
+                    </td>
+                    
+                    <td>
+                        <input type="date" name="investigate_date_{{ forloop.counter }}" value="{{ item.investigate_date|date:'Y-m-d' }}">
+                    </td>
+                    <td>
+                        <input type="date" name="schedule_date_{{ forloop.counter }}" value="{{ item.schedule_date|date:'Y-m-d' }}">
+                    </td>
+                    
+                    <td>
+                        <select name="lead_{{ forloop.counter }}">
+                            <option value="High" {% if item.lead == "High" %}selected{% endif %}>High</option>
+                            <option value="Medium" {% if item.lead == "Medium" %}selected{% endif %}>Medium</option>
+                            <option value="Low" {% if item.lead == "Low" %}selected{% endif %}>Low</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="response_{{ forloop.counter }}">
+                            <option value="Interested" {% if item.response == "Interested" %}selected{% endif %}>Interested</option>
+                            <option value="Good" {% if item.response == "Good" %}selected{% endif %}>Good</option>
+                            <option value="Bad" {% if item.response == "Bad" %}selected{% endif %}>Bad</option>
+                            <option value="Not Interested" {% if item.response == "Not Interested" %}selected{% endif %}>Not Interested</option>
+                        </select>
+                    </td>
+                    <td>
+                        <textarea name="description_{{ forloop.counter }}"  col="30" rows="2">{{ item.description }}</textarea>
+
+                    </td>
+                </tr>
+    
+                <input type="hidden" name="name_{{ forloop.counter }}" value="{{ item.name }}">
+                <input type="hidden" name="email_{{ forloop.counter }}" value="{{ item.email }}">
+                <input type="hidden" name="phonenumber_{{ forloop.counter }}" value="{{ item.phonenumber }}">
+                <input type="hidden" name="company_name_{{ forloop.counter }}" value="{{ item.company_name }}"> <!-- Hidden field for company name -->
+                <input type="hidden" name="location_{{ forloop.counter }}" value="{{ item.location }}"> <!-- Hidden field for location -->
+                {% endfor %}
+            </tbody>
+        </table>
+    
+        <input type="submit" value="Submit">
+    </form>
+    
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+    </script>
+    {% endblock %}

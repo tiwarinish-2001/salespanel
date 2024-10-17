@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Admin{% endblock %}
+{% load static %}
+{% block content %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Upload CSV File -->
+        <label for="csv_file">Upload CSV File:</label>
+        <input type="file" name="csv_file" required><br><br>
+        
+        <!-- Dynamic User Selection with Split Input -->
+        <label for="users">Select Users to Assign Data:</label><br>
+        <div id="user_selection">
+            {% for user in users %}
+            <div style="display: flex; width: 50%; background-color: #f0f9ff; align-items: center;justify-content: space-between;">
+                <!-- Checkbox for user selection -->
+                <input style="width: auto;margin: 10px;" type="checkbox" name="selected_users" value="{{ user.username }}" id="user_{{ user.id }}">
+                <label for="user_{{ user.id }}">{{ user.username }}</label>
+                
+                <!-- Input field for assigning number of records -->
+                <input style="width: 200px; margin: 0;" type="number" name="split_number_{{ user.username }}" placeholder="Number of rows" min="1">
+            </div>
+            {% endfor %}
+        </div>
+        
+        <br><br>
+        <input type="submit" value="Submit">
+        {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                {{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+    </form>
+    {% endblock %}

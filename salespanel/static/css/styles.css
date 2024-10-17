@@ -1,0 +1,331 @@
+/* General styling for body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Styling for the main heading */
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Styling for the form */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+/* Styling for labels */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Styling for input fields */
+input[type="file"],
+input[type="number"],
+input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Styling for the checkbox section */
+#user_selection {
+    margin-bottom: 20px;
+}
+
+/* Styling each user row */
+#user_selection div {
+    margin-bottom: 10px;
+}
+
+/* Styling for checkboxes and associated labels */
+input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+label[for^="user_"] {
+    font-weight: normal;
+    margin-right: 10px;
+}
+
+/* Submit button styling */
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+
+/* General body styling */
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+table, th, td {
+    border: 1px solid #ddd;
+}
+th, td {
+    padding: 12px;
+    text-align: left;
+}
+th {
+    background-color: #f4f4f4;
+}
+input, select {
+    width: 100%;
+    padding: 5px;
+}
+
+/* Styling for the form */
+
+.navbar {
+    background-color: #01204E;
+    color: white;
+    padding: 0.5rem 2rem; /* Spacing for the navbar */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Align brand and nav links */
+    align-items: center; /* Center vertically */
+}
+
+.navbar-brand {
+    font-size: 1.5rem; /* Larger font for the brand */
+    font-weight: bold; /* Bold text */
+    color: #F8F9D7 !important; /* White text */
+}
+
+/* Flexbox for navigation links */
+.navbar-nav {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-nav .nav-link {
+    color: #F8F9D7 !important; /* White text */
+    margin-right: 1.5rem; /* Spacing between the links */
+    font-size: 1rem; /* Normal font size */
+    font-weight: 500; /* Medium font weight */
+    transition: color 0.3s ease-in-out; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for the navbar links */
+.navbar-nav .nav-link:hover {
+    color: white !important; /* Light grey hover color */
+}
+
+/* Log In button */
+.navbar-nav .login-btn {
+    color: #F8F9D7 !important; /* White text for login */
+    font-weight: 600; /* Bold text */
+}
+
+/* Sign Up button styling */
+.navbar-nav .signup-btn {
+    background-color: #01204E; /* White background */
+    color: #F8F9D7; /* Black text */
+    border-radius: 5px; /* Slightly rounded corners */
+    padding: 0.5rem 1rem; /* Padding for the button */
+    font-weight: 600; /* Bold text */
+    transition: background-color 0.3s ease-in-out; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for Sign Up button */
+.navbar-nav .signup-btn:hover {
+    background-color: #01204E; /* Slightly darker background on hover */
+    color: white; /* Keep black text */
+}
+
+/* Navbar toggler for mobile view */
+.navbar-toggler {
+    display: none; /* Initially hidden */
+    border-color: rgba(255, 255, 255, 0.5); /* White border for toggle */
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.navbar-toggler-icon {
+    width: 30px;
+    height: 30px;
+    background-image: url("data:image/svg+xml;charset=UTF8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem;
+        flex-wrap: wrap; /* Allow wrapping on small screens */
+    }
+
+    .navbar-toggler {
+        display: block; /* Show the toggler */
+    }
+
+    .navbar-nav {
+        display: none; /* Hide nav links initially */
+        flex-direction: column; /* Stack nav items vertically */
+        width: 100%; /* Full width for the nav items */
+        margin-top: 1rem;
+        background-color: #01204E; /* Same background color as navbar */
+    }
+
+    .navbar-nav.show {
+        display: flex; /* Show nav items when toggled */
+    }
+
+    .navbar-nav .nav-link {
+        margin-right: 0; /* Remove margin for vertical stacking */
+        margin-bottom: 1rem; /* Add spacing between links */
+        text-align: center; /* Center the text */
+    }
+
+    .navbar-nav .signup-btn {
+        margin-top: 1rem; /* Spacing for the button */
+    }
+}
+
+
+    /* 
+    Card css 
+    Card container to organize the layout */
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-around;
+        padding: 20px;
+    }
+    
+    /* Styling for individual cards */
+    .card {
+        width: 250px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: #9d4edd;
+        background-color: black;
+        text-align: center;
+        text-decoration: none;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    a:hover {
+        color: #0056b3;
+        text-decoration: none !important;
+    }
+    
+    #transferForm {
+        margin-top: -110px;
+        padding: 10px;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Styling for labels and select dropdown */
+    #transferForm label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    
+    #transferForm select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+    }
+    
+    /* Transfer button styling */
+    #transferForm input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    
+    #transferForm input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+    
+    /* Responsive design for smaller screens */
+    @media (max-width: 768px) {
+        .card-container {
+            flex-direction: column;
+            align-items: center;
+        }
+    
+        .card {
+            width: 100%;
+            max-width: 400px;
+        }
+    }
+    /* Assign unique light background colors to each card */
+    
+    
+    /* Further responsiveness for mobile screens */
+    @media (max-width: 480px) {
+        .card-container {
+            padding: 10px;
+        }
+    
+        .card {
+            width: 90%;
+            font-size: 0.9em;
+        }
+    
+        .card h2 {
+            font-size: 1.3em;
+        }
+    
+        .card p {
+            font-size: 0.9em;
+        }
+    
+        #transferForm {
+            padding: 10px;
+        }
+    
+        #transferForm input[type="submit"] {
+            font-size: 0.9em;
+            padding: 8px;
+        }
+    }

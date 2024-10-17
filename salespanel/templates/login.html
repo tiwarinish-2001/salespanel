@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            background-image: radial-gradient(circle at 30% 30%, rgba(58, 123, 213, 0.15), transparent),
+                              radial-gradient(circle at 70% 70%, rgba(255, 102, 0, 0.15), transparent);
+            background-size: cover;
+        }
+        
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.75);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        
+        .login-container:hover {
+            background-color: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        h2 {
+            text-align: center;
+            color: #000;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #000;
+            font-size: 16px;
+            transition: background 0.2s ease-in-out, box-shadow 0.2s ease;
+        }
+        
+        input:focus {
+            background: rgba(255, 255, 255, 1);
+            outline: none;
+            border-color: #3a7bd5;
+            box-shadow: 0 0 8px rgba(58, 123, 213, 0.5);
+        }
+        
+        label {
+            color: #000;
+            font-size: 14px;
+        }
+        
+        .submit-btn {
+            background-color: #3a7bd5;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 6px;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #ff6600;
+            transform: translateY(-2px);
+        }
+        
+        .submit-btn:active {
+            background-color: #ff4500;
+            transform: translateY(0);
+        }
+        
+        .error {
+            color: red;
+            text-align: center;
+            display: none;
+        }
+        
+        p {
+            color: #000;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        p a {
+            color: #3a7bd5;
+            text-decoration: none;
+        }
+        
+        p a:hover {
+            text-decoration: underline;
+        }
+        
+        .messages {
+            text-align: center;
+            color: red;
+            margin: 10px;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        
+        .alert-info {
+            color: #31708f;
+            background-color: #d9edf7;
+            border-color: #bce8f1;
+        }
+        
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+        
+        .alert-warning {
+            color: #8a6d3b;
+            background-color: #fcf8e3;
+            border-color: #faebcc;
+        }
+        
+        .alert-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+        
+        /* Media Query for Responsive Design */
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 20px;
+                width: 90%;
+            }
+        
+            h2 {
+                font-size: 20px;
+            }
+        
+            input {
+                font-size: 14px;
+            }
+        
+            .submit-btn {
+                font-size: 14px;
+            }
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 85vh;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+    </style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<div id="particles-js"></div>
+
+<div class="login-container">
+    
+    <h2>Login Here</h2>
+    <form method="post">
+    
+        {% csrf_token %} 
+        <label for="username">Username</label>
+        <input type="text" placeholder="Enter Username" id="username" name="username">
+
+        <label for="password">Password</label>
+        <input type="password" placeholder="Password" id="password" name="password">
+
+        <button type="submit" class="submit-btn">Log In</button>
+        <!-- <input type="button" value=""> -->
+        <!-- <div class="social">
+          <div class="go"><i class="fab fa-google"></i>  Google</div>
+          <div class="fb"><i class="fab fa-facebook"></i>  Facebook</div>
+        </div> -->
+
+        
+
+    </form>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+    
+</div>
+
+<script>
+    particlesJS("particles-js", {
+        "particles": {
+            "number": {
+                "value": 100,
+                "density": {
+                    "enable": true,
+                    "value_area": 800
+                }
+            },
+            "color": {
+                "value": ["#ff0000", "#ffbf00", "#ffff00", "#ff00ff", "#00ffff"]
+            },
+            "shape": {
+                "type": "circle",
+                "stroke": {
+                    "width": 0,
+                    "color": "#ffffff"
+                }
+            },
+            "opacity": {
+                "value": 1,
+                "random": true,
+                "anim": {
+                    "enable": true,
+                    "speed": 3,
+                    "opacity_min": 0,
+                    "sync": false
+                }
+            },
+            "size": {
+                "value": 8,
+                "random": true,
+                "anim": {
+                    "enable": true,
+                    "speed": 20,
+                    "size_min": 0,
+                    "sync": false
+                }
+            },
+            "line_linked": {
+                "enable": false
+            },
+            "move": {
+                "enable": true,
+                "speed": 6,
+                "direction": "none",  // Random movement
+                "straight": false,
+                "out_mode": "out",
+                "bounce": false,
+                "attract": {
+                    "enable": true,
+                    "rotateX": 600,
+                    "rotateY": 1200
+                }
+            }
+        },
+        "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+                "onhover": {
+                    "enable": true,
+                    "mode": "repulse"
+                },
+                "onclick": {
+                    "enable": true,
+                    "mode": "push"
+                }
+            },
+            "modes": {
+                "repulse": {
+                    "distance": 150,
+                    "duration": 0.4
+                },
+                "push": {
+                    "particles_nb": 4
+                },
+                "remove": {
+                    "particles_nb": 2
+                }
+            }
+        },
+        "retina_detect": true
+    });
+    
+</script>
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+.navbar {
+    background-color: #36454F; /* Black background */
+    padding: 1rem 2rem; /* Spacing for the navbar */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 6px;
+}
+
+/* Navbar brand logo */
+.navbar-brand {
+    font-size: 1.5rem; /* Larger font for the brand */
+    font-weight: bold; /* Bold text */
+    color: #fff !important; /* White text */
+}
+
+/* Navbar links */
+.navbar-nav .nav-link {
+    color: #fff !important; /* White text */
+    margin-right: 1.5rem; /* Spacing between the links */
+    font-size: 1rem; /* Normal font size */
+    font-weight: 500; /* Medium font weight */
+    transition: color 0.3s ease-in-out; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for the navbar links */
+.navbar-nav .nav-link:hover {
+    color: #ccc !important; /* Light grey hover color */
+}
+
+/* Log In button */
+.navbar-nav .login-btn {
+    color: #fff !important; /* White text for login */
+    font-weight: 600; /* Bold text */
+}
+
+/* Sign Up button styling */
+.navbar-nav .signup-btn {
+    background-color: #fff; /* White background */
+    color: #000; /* Black text */
+    border-radius: 5px; /* Slightly rounded corners */
+    padding: 0.5rem 1rem; /* Padding for the button */
+    font-weight: 600; /* Bold text */
+    transition: background-color 0.3s ease-in-out; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for Sign Up button */
+.navbar-nav .signup-btn:hover {
+    background-color: #f8f8f8; /* Slightly darker background on hover */
+    color: #000; /* Keep black text */
+}
+
+/* Navbar toggler for mobile view */
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.5); /* White border for toggle */
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=UTF8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+main{
+    display: block;
+    padding: 15px;
+    width: 100%;
+    overflow: scroll;
+    scrollbar-width: none !important;
+}
+
+h1{
+    padding:5px;
+    text-align: center;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+
+@keyframes slideFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideFromRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideFromBottom {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.card {
+    background-color: white;
+    flex: 1;
+    max-width: 270px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s, color 0.2s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation-duration: 1.5s;
+}
+
+/* Container for cards */
+.card-container {
+    display: flex;
+    gap: 35px;
+    justify-content: center;
+    align-items: stretch;
+    height: 250px;
+}
+
+.card:nth-child(1) {
+    background-color: #A9BA9D;
+    animation-name: slideFromLeft;
+}
+
+.card:nth-child(2) {
+    background-color: #98c1d9;
+    animation-name: slideFromRight;
+}
+
+.card:nth-child(3) {
+    background-color: #008B8B;
+    animation-name: slideFromBottom;
+}
+
+.card:nth-child(1):hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(217, 255, 46, 0.2);
+    color: black; /* Specific hover color for Card 1 */
+}
+
+.card:nth-child(2):hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(217, 255, 46, 0.2);
+    color: #333D79; /* Specific hover color for Card 2 */
+}
+
+.card:nth-child(3):hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(217, 255, 46, 0.2);
+    color: #fff; /* Specific hover color for Card 3 */
+}
+
+.card h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.card p {
+    font-size: 16px;
+    color: #666;
+    margin-top: 20px;
+}
+
+
+
+a:hover {
+    color: #0056b3;
+    text-decoration: none !important;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+table, th, td {
+    border: 1px solid #ddd;
+
+}
+th, td {
+    padding: 12px;
+    text-align: left;
+}
+input, select {
+    width: 100%;
+    padding: 5px;
+}
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
